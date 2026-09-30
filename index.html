@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PideYa — Cafetería CBTIS 89</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FBF3E7;
+    --paper-2: #F3E6D2;
+    --ink: #2B2320;
+    --ink-soft: #6B5D4F;
+    --mustard: #E3A72E;
+    --mustard-dark: #B9821B;
+    --teal: #2F6F68;
+    --teal-dark: #234F4A;
+    --red: #C1432E;
+    --card: #FFFFFF;
+    --line: #E4D5BE;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1A16;
+      --paper-2: #2A241E;
+      --ink: #F3E9DA;
+      --ink-soft: #C6B9A6;
+      --card: #29231D;
+      --line: #45392C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1A16;
+    --paper-2: #2A241E;
+    --ink: #F3E9DA;
+    --ink-soft: #C6B9A6;
+    --card: #29231D;
+    --line: #45392C;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--paper-2);
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+  }
+  .shell {
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100%;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .ticker {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 16px;
+    padding-top: calc(8px + env(safe-area-inset-top, 0px));
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .ticker .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mustard); flex: none; }
+  .ticker span.msg { animation: none; }
+  header.top {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  header.top .topRow { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  header.top h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 26px;
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  header.top p { margin: 0; color: var(--ink-soft); font-size: 13.5px; }
+
+  .profileBtn {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--card); border: 1.5px solid var(--line); border-radius: 20px;
+    padding: 6px 12px 6px 8px; cursor: pointer; flex: none; margin-top: 2px;
+  }
+  .profileBtn .pbEmoji { font-size: 16px; }
+  .profileBtn .pbPoints { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+
+  .profileBody { padding: 18px 20px; overflow-y: auto; flex: 1; }
+  .avatarRow { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--paper-2); display: flex; align-items: center; justify-content: center; font-size: 26px; flex: none; }
+  .pName { font-family: 'Fredoka', sans-serif; font-size: 17px; }
+  .pMeta { font-size: 12.5px; color: var(--ink-soft); }
+
+  .badgeCard { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+  .badgeRow { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .badgeNext { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+
+  .tierList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .tierItem { display: flex; align-items: center; gap: 8px; font-size: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; }
+  .tierItem span { font-size: 16px; }
+  .pointsHint { font-size: 11.5px; color: var(--ink-soft); text-align: center; }
+
+  .staffBtn {
+    position: fixed; left: 50%; transform: translateX(calc(-215px + 14px));
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--card); border: 1.5px solid var(--line);
+    font-size: 17px; cursor: pointer; z-index: 15;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  }
+  .kitchenEmpty { font-size: 13px; color: var(--ink-soft); text-align: center; margin-top: 30px; }
+  .kOrder {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .kOrder .kVent {
+    font-family: 'Fredoka', sans-serif; font-size: 14px; color: var(--teal-dark);
+    background: color-mix(in srgb, var(--teal) 12%, var(--card)); border-radius: 8px; padding: 6px 10px; flex: none;
+  }
+  .kOrder .kInfo { flex: 1; font-size: 12.5px; }
+  .kOrder .kInfo .kCarrera { font-weight: 600; font-size: 13.5px; display: block; }
+  .kGroupHead { font-size: 12px; font-weight: 600; color: var(--ink-soft); margin: 14px 0 6px; }
+  .kGroupHead:first-child { margin-top: 0; }
+
+  main { flex: 1; padding: 18px 20px 110px; overflow-y: auto; }
+  section.step { display: none; }
+  section.step.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px);} to {opacity:1; transform:none;} }
+
+  h2.step-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 19px;
+    margin: 0 0 4px;
+  }
+  p.step-sub { margin: 0 0 16px; color: var(--ink-soft); font-size: 13.5px; }
+
+  .chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chip {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14.5px;
+  }
+  .chip .emoji { display: block; font-size: 26px; margin-bottom: 6px; }
+  .chip.selected { border-color: var(--teal); background: color-mix(in srgb, var(--teal) 10%, var(--card)); color: var(--teal-dark); }
+
+  .capacity {
+    margin-top: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .capacity .row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; color: var(--ink-soft); }
+  .bar { height: 8px; border-radius: 6px; background: var(--paper-2); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--mustard); border-radius: 6px; transition: width .4s ease; }
+
+  .combo {
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+  }
+  .combo.selected { border-color: var(--mustard-dark); box-shadow: 0 0 0 2px color-mix(in srgb, var(--mustard) 35%, transparent); }
+  .combo .radio {
+    width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line);
+    flex: none; margin-top: 2px; position: relative;
+  }
+  .combo.selected .radio { border-color: var(--mustard-dark); }
+  .combo.selected .radio::after {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mustard-dark);
+  }
+  .combo .info { flex: 1; }
+  .combo .info .name { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+  .combo .info .desc { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; }
+  .combo .price { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--teal-dark); font-size: 15px; }
+  .combo .save { display: inline-block; margin-left: 8px; font-size: 11px; background: color-mix(in srgb, var(--teal) 15%, var(--card)); color: var(--teal-dark); padding: 2px 7px; border-radius: 20px; }
+
+  .summary-card {
+    background: var(--card);
+    border: 1.5px dashed var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+  }
+  .summary-card .big { font-family: 'Fredoka', sans-serif; font-size: 34px; color: var(--mustard-dark); margin: 6px 0 2px; }
+  .summary-card .ventana { font-size: 14px; color: var(--ink-soft); margin-bottom: 10px; }
+  .line-item { display: flex; justify-content: space-between; font-size: 13.5px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .line-item:last-of-type { border-bottom: none; }
+
+  .impact-box {
+    margin-top: 14px;
+    background: color-mix(in srgb, var(--teal) 8%, var(--card));
+    border: 1px solid var(--teal);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+  .impact-title { font-family: 'Fredoka', sans-serif; font-size: 14px; margin-bottom: 10px; color: var(--teal-dark); }
+  .impact-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .impact-col { text-align: center; flex: 1; }
+  .impact-label { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 4px; }
+  .impact-val { font-family: 'Fredoka', sans-serif; font-size: 18px; font-weight: 600; }
+  .impact-val.old { color: var(--red); text-decoration: line-through; opacity: .8; }
+  .impact-val.new { color: var(--teal-dark); }
+  .impact-arrow { font-size: 18px; color: var(--ink-soft); flex: none; }
+  .impact-note { margin-top: 10px; font-size: 11.5px; color: var(--ink-soft); text-align: center; }
+
+  .rate-row { display: flex; gap: 10px; justify-content: center; margin: 18px 0 6px; }
+  .rate-row button { font-size: 30px; background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; width: 64px; height: 64px; cursor: pointer; }
+  .rate-row button.selected { border-color: var(--mustard-dark); background: color-mix(in srgb, var(--mustard) 12%, var(--card)); }
+
+  footer.actions {
+    position: sticky; bottom: 0;
+    padding: 14px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, var(--paper) 60%, transparent);
+    display: flex; gap: 10px;
+  }
+  button.primary, button.ghost {
+    flex: 1;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  button.primary { background: var(--teal); color: #fff; }
+  button.primary:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
+  button.ghost { background: transparent; color: var(--ink-soft); border: 1.5px solid var(--line); flex: 0 0 auto; padding: 14px 18px; }
+
+  .steps-dots { display: flex; gap: 6px; justify-content: center; padding: 10px 0 0; }
+  .steps-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+  .steps-dots i.done { background: var(--mustard-dark); }
+
+  .ticker { cursor: pointer; }
+  .ticker .tickerArrow { margin-left: auto; opacity: .7; }
+
+  .promoPanel {
+    position: fixed; inset: 0; max-width: 430px; margin: 0 auto;
+    background: var(--paper); z-index: 20;
+    display: flex; flex-direction: column;
+    transform: translateY(100%); transition: transform .28s ease;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .promoPanel.open { transform: translateY(0); }
+  .promoPanel-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .promoPanel-head h2 { font-family: 'Fredoka', sans-serif; font-size: 19px; margin: 0; }
+  .promoPanel-head button { background: none; border: none; font-size: 18px; color: var(--ink-soft); cursor: pointer; }
+  .promoList { padding: 16px 20px; overflow-y: auto; flex: 1; }
+  .promoItem {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .promoItem .pdate {
+    font-family: 'Fredoka', sans-serif; font-size: 12px; text-align: center;
+    background: var(--mustard); color: var(--ink); border-radius: 10px; padding: 6px 8px; flex: none; min-width: 46px;
+  }
+  .promoItem .ptext { font-size: 13.5px; }
+  .promoItem .ptext .ptitle { font-weight: 600; display: block; margin-bottom: 2px; }
+
+  .builder-group { margin-bottom: 18px; }
+  .builder-group h3 { font-size: 14px; margin: 0 0 8px; color: var(--ink-soft); font-weight: 600; }
+  .pick-row {
+    background: var(--card); border: 1.5px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .pick-row.selected { border-color: var(--mustard-dark); background: color-mix(in srgb, var(--mustard) 10%, var(--card)); }
+  .pick-row .radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; position: relative; }
+  .pick-row.selected .radio { border-color: var(--mustard-dark); }
+  .pick-row.selected .radio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mustard-dark); }
+  .pick-row .pname { flex: 1; font-size: 14px; font-weight: 500; }
+  .pick-row .pprice { font-size: 13.5px; color: var(--ink-soft); }
+  .pick-subhead { font-size: 12px; font-weight: 600; color: var(--ink-soft); margin: 14px 0 6px; }
+  .pick-subhead:first-child { margin-top: 0; }
+
+  .combo-total {
+    background: var(--card); border: 1.5px dashed var(--line); border-radius: 14px; padding: 14px 16px;
+  }
+  .combo-total .row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 4px 0; }
+  .combo-total .row.discount { color: var(--red); }
+  .combo-total .row.total { font-family: 'Fredoka', sans-serif; font-size: 18px; padding-top: 8px; border-top: 1px solid var(--line); margin-top: 6px; }
+
+  .groupToggle {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; margin-top: 14px; font-size: 13.5px; gap: 10px;
+  }
+  .switch { width: 40px; height: 22px; border-radius: 20px; background: var(--line); position: relative; flex: none; cursor: pointer; transition: background .2s; }
+  .switch i { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left .2s; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+  .switch.on { background: var(--teal); }
+  .switch.on i { left: 20px; }
+  #friendBuilder { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+
+  .histTitle { font-size: 14px; font-weight: 600; color: var(--ink-soft); margin: 18px 0 8px; }
+  .histItem {
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 8px; font-size: 12.5px; display: flex; justify-content: space-between; gap: 8px;
+  }
+  .histItem .hLeft b { display: block; font-size: 13px; }
+  .histItem .hRight { text-align: right; color: var(--teal-dark); font-weight: 600; flex: none; }
+
+  .toast {
+    position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); left: 50%;
+    transform: translate(-50%, -140%);
+    background: var(--ink); color: var(--paper);
+    padding: 12px 18px; border-radius: 30px; font-size: 13.5px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.25); z-index: 30;
+    transition: transform .35s ease; max-width: 340px; text-align: center;
+  }
+  .toast.show { transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="ticker" id="tickerBtn"><span class="dot"></span><span class="msg" id="promoMsg">Cargando promoción…</span><span class="tickerArrow">›</span></div>
+
+  <header class="top">
+    <div class="topRow">
+      <div>
+        <h1>PideYa 🥪</h1>
+        <p>Sobrepedidos — Cafetería CBTIS 89</p>
+      </div>
+      <button class="profileBtn" id="profileBtn">
+        <span class="pbEmoji">🥉</span>
+        <span class="pbPoints" id="headerPoints">120 pts</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="promoPanel" id="profilePanel">
+    <div class="promoPanel-head">
+      <h2>Tu perfil</h2>
+      <button id="closeProfile" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="profileBody">
+      <div class="avatarRow">
+        <div class="avatar" id="avatarBadge">🥉</div>
+        <div>
+          <div class="pName">Dante</div>
+          <div class="pMeta" id="profileMeta">Elige tu carrera y semestre</div>
+        </div>
+      </div>
+
+      <div class="badgeCard">
+        <div class="badgeRow">
+          <span class="badgeName" id="badgeName">Bronce</span>
+          <span class="badgePts" id="badgePtsText">120 pts</span>
+        </div>
+        <div class="bar"><i id="badgeBar" style="width:0%"></i></div>
+        <div class="badgeNext" id="badgeNext">Faltan puntos para Plata</div>
+      </div>
+
+      <div class="tierList">
+        <div class="tierItem"><span>🥉</span>Bronce — 0 pts</div>
+        <div class="tierItem"><span>🥈</span>Plata — 100 pts</div>
+        <div class="tierItem"><span>🥇</span>Oro — 250 pts</div>
+        <div class="tierItem"><span>💎</span>Diamante — 500 pts</div>
+      </div>
+      <p class="pointsHint">Ganas 1 punto por cada $10 pagados. Usa tus puntos para descuentos en compras futuras.</p>
+
+      <h3 class="histTitle">Historial de pedidos</h3>
+      <div id="historialList"><p class="kitchenEmpty">Aún no has hecho ningún pedido.</p></div>
+    </div>
+  </div>
+
+  <div class="promoPanel" id="promoPanel">
+    <div class="promoPanel-head">
+      <h2>Noticias y promociones</h2>
+      <button id="closePromo" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="promoList" id="promoList"></div>
+  </div>
+
+  <main>
+    <!-- STEP 1: elegir especialidad -->
+    <section class="step active" data-step="1">
+      <h2 class="step-title">¿De qué grupo eres?</h2>
+      <p class="step-sub">Pide antes de salir a receso — recoges directo en tu ventana, sin hacer fila.</p>
+      <div class="chips" id="chips"></div>
+
+      <div id="semWrap" style="display:none; margin-top:16px;">
+        <h3 style="font-size:14px;margin:0 0 8px;color:var(--ink-soft);font-weight:600;">¿Qué semestre?</h3>
+        <div class="chips" id="semChips" style="grid-template-columns: repeat(3, 1fr);"></div>
+      </div>
+
+      <div class="capacity">
+        <div class="row"><span>Cupo para tu turno</span><span id="capText">—</span></div>
+        <div class="bar"><i id="capBar" style="width:0%"></i></div>
+      </div>
+    </section>
+
+    <!-- STEP 2: armar combo -->
+    <section class="step" data-step="2">
+      <h2 class="step-title">Arma tu pedido</h2>
+      <p class="step-sub" id="groupSub">Elige solo uno, o ambos para armar combo con descuento.</p>
+
+      <div class="builder-group">
+        <h3>Elige tu platillo</h3>
+        <div id="platillos"></div>
+      </div>
+
+      <div class="builder-group">
+        <h3>Elige tu bebida</h3>
+        <div id="bebidas"></div>
+      </div>
+
+      <div class="combo-total" id="comboTotal" style="display:none">
+        <div class="row"><span id="tPlatillo">—</span><span id="tPlatilloPrice">$0</span></div>
+        <div class="row"><span id="tBebida">—</span><span id="tBebidaPrice">$0</span></div>
+        <div class="row discount"><span>Descuento por combo</span><span id="tDiscount">-$0</span></div>
+        <div class="row total"><span>Total</span><span id="tTotal">$0</span></div>
+      </div>
+
+      <div class="groupToggle" id="groupToggle">
+        <span>👥 Pedir junto con un compañero de tu grupo</span>
+        <div class="switch" id="groupSwitch"><i></i></div>
+      </div>
+
+      <div id="friendBuilder" style="display:none">
+        <div class="builder-group">
+          <h3>Platillo — compañero</h3>
+          <div id="friendPlatillos"></div>
+        </div>
+        <div class="builder-group">
+          <h3>Bebida — compañero</h3>
+          <div id="friendBebidas"></div>
+        </div>
+        <div class="combo-total" id="friendTotal" style="display:none">
+          <div class="row"><span id="fPlatillo">—</span><span id="fPlatilloPrice">$0</span></div>
+          <div class="row"><span id="fBebida">—</span><span id="fBebidaPrice">$0</span></div>
+          <div class="row discount"><span>Descuento por combo</span><span id="fDiscount">-$0</span></div>
+          <div class="row total"><span>Total compañero</span><span id="fTotalVal">$0</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: confirmación -->
+    <section class="step" data-step="3">
+      <h2 class="step-title">Pedido confirmado</h2>
+      <p class="step-sub">Preséntate en tu ventana cuando empiece el receso.</p>
+      <div class="summary-card">
+        <div style="font-size:13px;color:var(--ink-soft)">Tu ventana</div>
+        <div class="big" id="ventanaNum">—</div>
+        <div class="ventana" id="ventanaGrupo">—</div>
+        <div class="line-item"><span id="comboName">—</span><span id="comboPrice">—</span></div>
+        <div class="line-item"><span>Tiempo estimado de entrega</span><span>~10 min</span></div>
+        <div class="line-item"><span>Puntos</span><span id="pointsEarnedText">—</span></div>
+      </div>
+
+      <div class="impact-box">
+        <div class="impact-title">📉 Impacto del sobrepedido</div>
+        <div class="impact-row">
+          <div class="impact-col">
+            <div class="impact-label">Sin app (fila normal)</div>
+            <div class="impact-val old">15–20 min</div>
+          </div>
+          <div class="impact-arrow">→</div>
+          <div class="impact-col">
+            <div class="impact-label">Con PideYa</div>
+            <div class="impact-val new">~10 min</div>
+          </div>
+        </div>
+        <div class="impact-note">Hasta 50% menos tiempo de espera, según el benchmarking de la cafetería.</div>
+      </div>
+    </section>
+
+    <!-- STEP 4: calificar -->
+    <section class="step" data-step="4">
+      <h2 class="step-title">¿Cómo estuvo tu pedido?</h2>
+      <p class="step-sub">Tu opinión ayuda a mejorar el servicio.</p>
+      <div class="rate-row" id="rateRow">
+        <button data-v="bad">☹️</button>
+        <button data-v="ok">😐</button>
+        <button data-v="good">😊</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="steps-dots" id="dots"></div>
+
+  <button class="staffBtn" id="staffBtn" title="Vista de cocina (personal)">👩‍🍳</button>
+
+  <div class="promoPanel" id="kitchenPanel">
+    <div class="promoPanel-head">
+      <h2>Vista de cocina</h2>
+      <button id="closeKitchen" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="promoList" id="kitchenList">
+      <p class="kitchenEmpty">Aún no hay pedidos. Confirma un pedido como alumno para verlo aparecer aquí.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="readyToast">🔔 <span id="toastText">Tu pedido está listo</span></div>
+
+  <footer class="actions">
+    <button class="ghost" id="backBtn" style="visibility:hidden">Atrás</button>
+    <button class="primary" id="nextBtn" disabled>Elige tu grupo</button>
+  </footer>
+</div>
+
+<script>
+const carreras = [
+  { id: 'ecommerce', name: 'E-commerce', emoji: '🛒' },
+  { id: 'construccion', name: 'Construcción', emoji: '🧱' },
+  { id: 'arquitectura', name: 'Arquitectura', emoji: '📐' },
+  { id: 'programacion', name: 'Programación', emoji: '💻' },
+  { id: 'mecatronica', name: 'Mecatrónica', emoji: '⚙️' },
+  { id: 'contabilidad', name: 'Contabilidad', emoji: '📊' },
+  { id: 'rh', name: 'Recursos Humanos', emoji: '🧑‍🤝‍🧑' },
+  { id: 'aduanas', name: 'Comercio Internacional y Aduanas', emoji: '🚢' },
+];
+
+const semestres = [1, 3, 5];
+const NUM_VENTANAS = 6;
+const CAP = 55;
+
+// Genera un grupo por cada combinación carrera + semestre, con ventana asignada por rotación
+// y una ocupación de ejemplo (ilustrativa) para mostrar el cupo disponible.
+const groups = [];
+let vIdx = 0;
+carreras.forEach((c, ci) => {
+  semestres.forEach((s, si) => {
+    vIdx = (vIdx + 1) % NUM_VENTANAS;
+    const sample = [12, 30, 47, 20, 39, 8, 25, 51, 5][(ci * 3 + si) % 9];
+    groups.push({
+      id: `${c.id}_${s}`,
+      carreraId: c.id,
+      name: c.name,
+      emoji: c.emoji,
+      semestre: s,
+      ventana: vIdx + 1,
+      cap: CAP,
+      taken: sample,
+    });
+  });
+});
+
+const platillos = [
+  // Antojitos
+  { id: 'tacos', name: 'Tacos dorados (5)', price: 40, cat: 'Antojitos' },
+  { id: 'burritos', name: 'Burritos', price: 23, cat: 'Antojitos' },
+  { id: 'gorditas', name: 'Gorditas', price: 30, cat: 'Antojitos' },
+  { id: 'chilaquiles', name: 'Chilaquiles', price: 35, cat: 'Antojitos' },
+  { id: 'gringas', name: 'Gringas', price: 35, cat: 'Antojitos' },
+  { id: 'kekas', name: 'Kekas (2 pzas)', price: 35, cat: 'Antojitos' },
+  { id: 'torta_jamon', name: 'Torta de jamón', price: 30, cat: 'Antojitos' },
+  { id: 'torta_pierna', name: 'Torta de pierna', price: 35, cat: 'Antojitos' },
+  { id: 'torta_chilaquil', name: 'Torta de chilaquil', price: 35, cat: 'Antojitos' },
+  // Con papas / guisados
+  { id: 'hotdog', name: 'Hot dog sencillo', price: 22, cat: 'Con papas y guisados' },
+  { id: 'hotdog_papas', name: 'Hot dog c/papas', price: 27, cat: 'Con papas y guisados' },
+  { id: 'hamburguesa', name: 'Hamburguesa', price: 45, cat: 'Con papas y guisados' },
+  { id: 'hamburguesa_papas', name: 'Hamburguesa c/papas', price: 50, cat: 'Con papas y guisados' },
+  { id: 'molletes', name: 'Molletes', price: 40, cat: 'Con papas y guisados' },
+  { id: 'molletes_guisos', name: 'Molletes con guisos', price: 45, cat: 'Con papas y guisados' },
+  { id: 'pizzalletes', name: 'Pizzalletes', price: 45, cat: 'Con papas y guisados' },
+  { id: 'pizzalletes_papas', name: 'Pizzalletes c/papas', price: 50, cat: 'Con papas y guisados' },
+  { id: 'nuggets', name: 'Nuggets c/papas', price: 45, cat: 'Con papas y guisados' },
+  { id: 'salchipapas', name: 'Salchipapas', price: 40, cat: 'Con papas y guisados' },
+  { id: 'papas_francesa', name: 'Papas a la francesa', price: 45, cat: 'Con papas y guisados' },
+  // Quesadillas
+  { id: 'ques_chicharron', name: 'Quesadilla de chicharrón', price: 25, cat: 'Quesadillas' },
+  { id: 'ques_asada', name: 'Quesadilla de asada', price: 25, cat: 'Quesadillas' },
+  { id: 'ques_pastor', name: 'Quesadilla de pastor', price: 25, cat: 'Quesadillas' },
+  { id: 'ques_deshebrada', name: 'Quesadilla de deshebrada', price: 25, cat: 'Quesadillas' },
+  { id: 'ques_frijoles', name: 'Quesadilla de frijoles', price: 25, cat: 'Quesadillas' },
+  { id: 'discada', name: 'Discada (plato)', price: 65, cat: 'Quesadillas' },
+  // Ligero / desayuno
+  { id: 'sandwich', name: 'Sandwich jamón y queso', price: 25, cat: 'Ligero y desayuno' },
+  { id: 'cuernito', name: 'Cuernito', price: 30, cat: 'Ligero y desayuno' },
+  { id: 'fruta', name: 'Fruta', price: 20, cat: 'Ligero y desayuno' },
+];
+
+const bebidas = [
+  { id: 'agua', name: 'Agua', price: 15 },
+  { id: 'refresco', name: 'Refresco', price: 18 },
+  { id: 'cafe', name: 'Café', price: 20 },
+  { id: 'chocomilk', name: 'Chocomilk', price: 35 },
+  { id: 'rompope', name: 'Rompope', price: 35 },
+];
+
+const COMBO_DISCOUNT = 8;
+
+const promos = [
+  { date: '1 oct', title: 'Miércoles de 2×1', text: 'En bebidas individuales, todos los miércoles del mes.' },
+  { date: '3 oct', title: '5% de descuento', text: 'En combos armados (platillo + bebida) los viernes.' },
+  { date: '6 oct', title: 'Martes de café', text: 'Café individual a $15 (precio normal $20).' },
+  { date: '2 nov', title: 'Día de Muertos', text: 'Pan de muerto individual a mitad de precio.' },
+  { date: '20 nov', title: 'Día de la Revolución', text: 'Combo especial con 10% de descuento.' },
+];
+
+const TIERS = [
+  { name: 'Bronce', min: 0, emoji: '🥉' },
+  { name: 'Plata', min: 100, emoji: '🥈' },
+  { name: 'Oro', min: 250, emoji: '🥇' },
+  { name: 'Diamante', min: 500, emoji: '💎' },
+];
+
+function tierFor(points) {
+  let current = TIERS[0];
+  for (const t of TIERS) if (points >= t.min) current = t;
+  return current;
+}
+function nextTierFor(points) {
+  return TIERS.find(t => t.min > points) || null;
+}
+
+let state = {
+  carreraId: null, semestre: null,
+  platillo: null, bebida: null,
+  rating: null, points: 120, lastEarned: 0,
+  groupMode: false, friend: { platillo: null, bebida: null },
+  orderLog: [],
+};
+let step = 1;
+
+function renderProfile() {
+  const tier = tierFor(state.points);
+  const next = nextTierFor(state.points);
+  document.getElementById('headerPoints').textContent = state.points + ' pts';
+  document.getElementById('profileBtn').querySelector('.pbEmoji').textContent = tier.emoji;
+  document.getElementById('avatarBadge').textContent = tier.emoji;
+  document.getElementById('badgeName').textContent = tier.name;
+  document.getElementById('badgePtsText').textContent = state.points + ' pts';
+
+  const g = currentGroup();
+  document.getElementById('profileMeta').textContent = g ? `${g.name} — ${g.semestre}° semestre` : 'Elige tu carrera y semestre';
+
+  const bar = document.getElementById('badgeBar');
+  const nextEl = document.getElementById('badgeNext');
+  if (next) {
+    const span = next.min - tier.min;
+    const progressed = state.points - tier.min;
+    bar.style.width = Math.min(100, Math.round((progressed / span) * 100)) + '%';
+    nextEl.textContent = `Faltan ${next.min - state.points} pts para ${next.name}`;
+  } else {
+    bar.style.width = '100%';
+    nextEl.textContent = '¡Nivel máximo alcanzado!';
+  }
+}
+
+function currentGroup() {
+  return groups.find(g => g.carreraId === state.carreraId && g.semestre === state.semestre);
+}
+
+function renderChips() {
+  const el = document.getElementById('chips');
+  el.innerHTML = '';
+  carreras.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'chip' + (state.carreraId === c.id ? ' selected' : '');
+    div.innerHTML = `<span class="emoji">${c.emoji}</span>${c.name}`;
+    div.onclick = () => {
+      state.carreraId = c.id;
+      state.semestre = null;
+      renderChips();
+      document.getElementById('semWrap').style.display = 'block';
+      renderSemChips();
+      renderCapacity();
+      updateFooter();
+    };
+    el.appendChild(div);
+  });
+}
+
+function renderSemChips() {
+  const el = document.getElementById('semChips');
+  el.innerHTML = '';
+  semestres.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'chip' + (state.semestre === s ? ' selected' : '');
+    div.style.padding = '12px 8px';
+    div.textContent = s + '°';
+    div.onclick = () => { state.semestre = s; renderSemChips(); renderCapacity(); updateFooter(); };
+    el.appendChild(div);
+  });
+}
+
+function renderCapacity() {
+  const g = currentGroup();
+  const capText = document.getElementById('capText');
+  const capBar = document.getElementById('capBar');
+  if (!g) { capText.textContent = 'Elige tu grupo y semestre'; capBar.style.width = '0%'; return; }
+  const left = g.cap - g.taken;
+  const pct = Math.round((g.taken / g.cap) * 100);
+  capText.textContent = `${left} de ${g.cap} lugares disponibles`;
+  capBar.style.width = pct + '%';
+}
+
+function renderPickList(containerId, items, field, grouped) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const makeRow = (it) => {
+    const row = document.createElement('div');
+    row.className = 'pick-row' + (state[field] === it.id ? ' selected' : '');
+    row.innerHTML = `<div class="radio"></div><div class="pname">${it.name}</div><div class="pprice">$${it.price}</div>`;
+    row.onclick = () => { state[field] = it.id; renderCombos(); updateFooter(); };
+    return row;
+  };
+  if (!grouped) {
+    items.forEach(it => el.appendChild(makeRow(it)));
+    return;
+  }
+  const cats = [...new Set(items.map(i => i.cat))];
+  cats.forEach(cat => {
+    const h = document.createElement('div');
+    h.className = 'pick-subhead';
+    h.textContent = cat;
+    el.appendChild(h);
+    items.filter(i => i.cat === cat).forEach(it => el.appendChild(makeRow(it)));
+  });
+}
+
+function friendOrderTotal() {
+  const p = platillos.find(x => x.id === state.friend.platillo);
+  const b = bebidas.find(x => x.id === state.friend.bebida);
+  let total = 0, label = '';
+  if (p && b) { total = p.price + b.price - COMBO_DISCOUNT; label = `${p.name} + ${b.name}`; }
+  else if (p) { total = p.price; label = p.name; }
+  else if (b) { total = b.price; label = b.name; }
+  return { total, label, hasAny: !!(p || b) };
+}
+
+function renderFriendPickList(containerId, items, field) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'pick-row' + (state.friend[field] === it.id ? ' selected' : '');
+    row.innerHTML = `<div class="radio"></div><div class="pname">${it.name}</div><div class="pprice">$${it.price}</div>`;
+    row.onclick = () => { state.friend[field] = it.id; renderFriendBuilder(); updateFooter(); };
+    el.appendChild(row);
+  });
+}
+
+function renderFriendBuilder() {
+  renderFriendPickList('friendPlatillos', platillos, 'platillo');
+  renderFriendPickList('friendBebidas', bebidas, 'bebida');
+  const p = platillos.find(x => x.id === state.friend.platillo);
+  const b = bebidas.find(x => x.id === state.friend.bebida);
+  const box = document.getElementById('friendTotal');
+  if (!p && !b) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  const rP = document.getElementById('fPlatillo').closest('.row');
+  const rB = document.getElementById('fBebida').closest('.row');
+  const rD = document.getElementById('fDiscount').closest('.row');
+  let total = 0;
+  if (p) { rP.style.display = 'flex'; document.getElementById('fPlatillo').textContent = p.name; document.getElementById('fPlatilloPrice').textContent = '$' + p.price; total += p.price; } else rP.style.display = 'none';
+  if (b) { rB.style.display = 'flex'; document.getElementById('fBebida').textContent = b.name; document.getElementById('fBebidaPrice').textContent = '$' + b.price; total += b.price; } else rB.style.display = 'none';
+  if (p && b) { rD.style.display = 'flex'; document.getElementById('fDiscount').textContent = '-$' + COMBO_DISCOUNT; total -= COMBO_DISCOUNT; } else rD.style.display = 'none';
+  document.getElementById('fTotalVal').textContent = '$' + total;
+}
+
+function renderCombos() {
+  const g = currentGroup();
+  document.getElementById('groupSub').textContent = g
+    ? `Pedido para ${g.name} (${g.semestre}°) — ventana ${g.ventana}. Elige solo uno, o ambos para armar combo con descuento.`
+    : 'Elige solo uno, o ambos para armar combo con descuento.';
+  renderPickList('platillos', platillos, 'platillo', true);
+  renderPickList('bebidas', bebidas, 'bebida', false);
+  if (state.groupMode) renderFriendBuilder();
+
+  const p = platillos.find(x => x.id === state.platillo);
+  const b = bebidas.find(x => x.id === state.bebida);
+  const totalBox = document.getElementById('comboTotal');
+  const rowPlatillo = document.getElementById('tPlatillo').closest('.row');
+  const rowBebida = document.getElementById('tBebida').closest('.row');
+  const rowDiscount = document.getElementById('tDiscount').closest('.row');
+
+  if (!p && !b) { totalBox.style.display = 'none'; return; }
+
+  totalBox.style.display = 'block';
+  let total = 0;
+
+  if (p) {
+    rowPlatillo.style.display = 'flex';
+    document.getElementById('tPlatillo').textContent = p.name;
+    document.getElementById('tPlatilloPrice').textContent = '$' + p.price;
+    total += p.price;
+  } else {
+    rowPlatillo.style.display = 'none';
+  }
+
+  if (b) {
+    rowBebida.style.display = 'flex';
+    document.getElementById('tBebida').textContent = b.name;
+    document.getElementById('tBebidaPrice').textContent = '$' + b.price;
+    total += b.price;
+  } else {
+    rowBebida.style.display = 'none';
+  }
+
+  if (p && b) {
+    rowDiscount.style.display = 'flex';
+    document.getElementById('tDiscount').textContent = '-$' + COMBO_DISCOUNT;
+    total -= COMBO_DISCOUNT;
+  } else {
+    rowDiscount.style.display = 'none';
+  }
+
+  document.getElementById('tTotal').textContent = '$' + total;
+}
+
+function orderTotal() {
+  const p = platillos.find(x => x.id === state.platillo);
+  const b = bebidas.find(x => x.id === state.bebida);
+  let total = 0, label = '';
+  if (p && b) { total = p.price + b.price - COMBO_DISCOUNT; label = `${p.name} + ${b.name}`; }
+  else if (p) { total = p.price; label = p.name + ' (individual)'; }
+  else { total = b.price; label = b.name + ' (individual)'; }
+
+  if (state.groupMode) {
+    const f = friendOrderTotal();
+    if (f.hasAny) {
+      total += f.total;
+      label += ` · Compañero: ${f.label}`;
+    }
+  }
+  return { total, label };
+}
+
+function renderConfirmation() {
+  const g = currentGroup();
+  const { total, label } = orderTotal();
+  document.getElementById('ventanaNum').textContent = 'Ventana ' + g.ventana;
+  document.getElementById('ventanaGrupo').textContent = `${g.name} — ${g.semestre}°`;
+  document.getElementById('comboName').textContent = label;
+  document.getElementById('comboPrice').textContent = '$' + total;
+  document.getElementById('pointsEarnedText').textContent = `+${state.lastEarned} pts ganados`;
+}
+
+function renderPromoPanel() {
+  const list = document.getElementById('promoList');
+  list.innerHTML = '';
+  promos.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'promoItem';
+    div.innerHTML = `<div class="pdate">${p.date}</div><div class="ptext"><span class="ptitle">${p.title}</span>${p.text}</div>`;
+    list.appendChild(div);
+  });
+}
+
+function renderDots() {
+  const dots = document.getElementById('dots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.createElement('i');
+    if (i <= step) dot.className = 'done';
+    dots.appendChild(dot);
+  }
+}
+
+function updateFooter() {
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  backBtn.style.visibility = step === 1 ? 'hidden' : 'visible';
+
+  if (step === 1) {
+    const ready1 = state.carreraId && state.semestre;
+    nextBtn.textContent = ready1 ? 'Continuar' : 'Elige tu grupo';
+    nextBtn.disabled = !ready1;
+  } else if (step === 2) {
+    const ready = state.platillo || state.bebida;
+    nextBtn.textContent = ready ? 'Confirmar pedido' : 'Elige algo para pedir';
+    nextBtn.disabled = !ready;
+  } else if (step === 3) {
+    nextBtn.textContent = 'Ya recogí mi pedido';
+    nextBtn.disabled = false;
+  } else if (step === 4) {
+    nextBtn.textContent = state.rating ? 'Listo' : 'Califica tu pedido';
+    nextBtn.disabled = !state.rating;
+  }
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+  step = n;
+  renderDots();
+  if (n === 2) renderCombos();
+  if (n === 3) {
+    const { total, label } = orderTotal();
+    state.lastEarned = Math.floor(total / 10);
+    state.points += state.lastEarned;
+    renderConfirmation();
+    renderProfile();
+    const g = currentGroup();
+    g.taken = Math.min(g.cap, g.taken + (state.groupMode ? 2 : 1));
+
+    state.orderLog.unshift({
+      ventana: g.ventana, carrera: g.name, semestre: g.semestre,
+      label, total, points: state.lastEarned,
+      group: state.groupMode, time: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+    });
+    renderKitchen();
+    renderHistorial();
+    scheduleReadyNotification(g.ventana);
+  }
+  updateFooter();
+}
+
+document.getElementById('nextBtn').onclick = () => {
+  if (step < 4) goToStep(step + 1);
+  else {
+    state.carreraId = null; state.semestre = null;
+    state.platillo = null; state.bebida = null;
+    state.rating = null; state.groupMode = false;
+    state.friend = { platillo: null, bebida: null };
+    document.getElementById('semWrap').style.display = 'none';
+    document.getElementById('groupSwitch').classList.remove('on');
+    document.getElementById('friendBuilder').style.display = 'none';
+    goToStep(1);
+    renderChips();
+    renderCapacity();
+  }
+};
+document.getElementById('backBtn').onclick = () => { if (step > 1) goToStep(step - 1); };
+
+document.getElementById('rateRow').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  state.rating = btn.dataset.v;
+  document.querySelectorAll('#rateRow button').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateFooter();
+});
+
+let promoIdx = 0;
+function rotatePromo() {
+  const p = promos[promoIdx];
+  document.getElementById('promoMsg').textContent = `${p.date} — ${p.title}`;
+  promoIdx = (promoIdx + 1) % promos.length;
+}
+rotatePromo();
+setInterval(rotatePromo, 3800);
+
+function renderKitchen() {
+  const el = document.getElementById('kitchenList');
+  if (!state.orderLog.length) {
+    el.innerHTML = '<p class="kitchenEmpty">Aún no hay pedidos. Confirma un pedido como alumno para verlo aparecer aquí.</p>';
+    return;
+  }
+  const byVentana = {};
+  state.orderLog.forEach(o => { (byVentana[o.ventana] = byVentana[o.ventana] || []).push(o); });
+  el.innerHTML = '';
+  Object.keys(byVentana).sort((a, b) => a - b).forEach(v => {
+    const head = document.createElement('div');
+    head.className = 'kGroupHead';
+    head.textContent = `Ventana ${v}`;
+    el.appendChild(head);
+    byVentana[v].forEach(o => {
+      const div = document.createElement('div');
+      div.className = 'kOrder';
+      div.innerHTML = `
+        <div class="kVent">${o.time}</div>
+        <div class="kInfo">
+          <span class="kCarrera">${o.carrera} — ${o.semestre}°${o.group ? ' · grupal (2)' : ''}</span>
+          ${o.label}
+        </div>`;
+      el.appendChild(div);
+    });
+  });
+}
+
+function renderHistorial() {
+  const el = document.getElementById('historialList');
+  if (!state.orderLog.length) {
+    el.innerHTML = '<p class="kitchenEmpty">Aún no has hecho ningún pedido.</p>';
+    return;
+  }
+  el.innerHTML = '';
+  state.orderLog.forEach(o => {
+    const div = document.createElement('div');
+    div.className = 'histItem';
+    div.innerHTML = `
+      <div class="hLeft"><b>${o.label}</b>${o.time} · Ventana ${o.ventana}</div>
+      <div class="hRight">$${o.total}<br>+${o.points} pts</div>`;
+    el.appendChild(div);
+  });
+}
+
+function scheduleReadyNotification(ventana) {
+  setTimeout(() => {
+    document.getElementById('toastText').textContent = `Tu pedido está listo — Ventana ${ventana}`;
+    const toast = document.getElementById('readyToast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }, 3500);
+}
+
+document.getElementById('groupSwitch').onclick = () => {
+  state.groupMode = !state.groupMode;
+  document.getElementById('groupSwitch').classList.toggle('on', state.groupMode);
+  document.getElementById('friendBuilder').style.display = state.groupMode ? 'block' : 'none';
+  if (state.groupMode) renderFriendBuilder();
+  updateFooter();
+};
+
+document.getElementById('staffBtn').onclick = () => { renderKitchen(); document.getElementById('kitchenPanel').classList.add('open'); };
+document.getElementById('closeKitchen').onclick = () => document.getElementById('kitchenPanel').classList.remove('open');
+
+renderPromoPanel();
+document.getElementById('tickerBtn').onclick = () => document.getElementById('promoPanel').classList.add('open');
+document.getElementById('closePromo').onclick = () => document.getElementById('promoPanel').classList.remove('open');
+document.getElementById('profileBtn').onclick = () => { renderProfile(); document.getElementById('profilePanel').classList.add('open'); };
+document.getElementById('closeProfile').onclick = () => document.getElementById('profilePanel').classList.remove('open');
+
+renderChips();
+renderCapacity();
+renderProfile();
+renderKitchen();
+renderHistorial();
+renderDots();
+updateFooter();
+</script>
+</body>
+</html>
